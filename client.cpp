@@ -24,17 +24,22 @@ int setup_uinput_device() {
         return -1;
     }
 
+    // Enable Key events
     ioctl(fd, UI_SET_EVBIT, EV_KEY);
-    ioctl(fd, UI_SET_KEYBIT, KEY_RIGHTALT);
-    ioctl(fd, UI_SET_KEYBIT, BTN_LEFT);
-    ioctl(fd, UI_SET_KEYBIT, BTN_RIGHT);
-    ioctl(fd, UI_SET_KEYBIT, BTN_MIDDLE);
+    
+    // Instead of just KEY_RIGHTALT, enable all standard keys
+    // KEY_MAX is defined in <linux/input.h>
+    for (int i = 0; i < KEY_MAX; i++) {
+        ioctl(fd, UI_SET_KEYBIT, i);
+    }
 
+    // Enable Relative movement (Mouse)
     ioctl(fd, UI_SET_EVBIT, EV_REL);
     ioctl(fd, UI_SET_RELBIT, REL_X);
     ioctl(fd, UI_SET_RELBIT, REL_Y);
     ioctl(fd, UI_SET_RELBIT, REL_WHEEL);
 
+    // Enable Synchronization
     ioctl(fd, UI_SET_EVBIT, EV_SYN);
 
     struct uinput_user_dev uidev;
